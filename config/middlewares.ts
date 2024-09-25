@@ -5,7 +5,7 @@ export default [
 {
     name: 'strapi::cors',
     config: {
-      origin: ['strapi.samai.cl'],
+      origin: ['strapi.samai.cl', 'analytics.strapi.io'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
       keepHeaderOnError: true,
