@@ -12,7 +12,11 @@ ENV PATH /opt/node_modules/.bin:$PATH
 
 WORKDIR /opt/app
 COPY . .
-RUN ["yarn", "build"]
+RUN chown -R node:node /opt/app
+USER node
+RUN yarn install
+
+RUN yarn build
 
 # EXTRA VITE STUFF HERE
 # switch back to root to make node:node owner of node_modules after build
