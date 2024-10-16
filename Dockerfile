@@ -1,48 +1,47 @@
 FROM node:20-alpine
 
-# Instalar dependencias necesarias para construir la aplicación
+# Install dependencies needed to build the app
 RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev nasm bash vips-dev git
 
-# Establecer la variable de entorno para el entorno de desarrollo
+# Set the environment to development by default
 ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
 
-# Establecer directorio de trabajo
+# Set working directory
 WORKDIR /opt
 
-# Copiar solamente package.json y yarn.lock para aprovechar el caché
+# Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
 
-# Instalar node-gyp y dependencias del proyecto
+# Install node-gyp globally and project dependencies
 RUN yarn global add node-gyp && \
     yarn config set network-timeout 600000 -g && \
     yarn install
 
-# Ajustar el PATH
+# Set PATH
 ENV PATH /opt/node_modules/.bin:$PATH
 
-# Cambiar al directorio de la aplicación
-WORKDIR /opt/app
+# Create the necessary directories and ensure permissions
+RUN mkdir -p /opt/app /opt/.strapi && \
+    chown -R node:node /opt/
 
-# Copiar el resto del código fuente
+# Copy application source
+WORKDIR /opt/app
 COPY . .
 
-# Asegurar que el usuario tiene privilegios necesarios en el directorio
-RUN chown -R node:node /opt/app
-
-# Cambiar al usuario 'node'
+# Run as the node user
 USER node
 
-# Ejecutar comandos adicionales
+# Install and build the application
 RUN yarn install && yarn build
 
-# Crear el directorio necesario para Vite (con permisos adecuados)
+# Make sure the vite directory exists and permissions are set
 RUN mkdir -p /opt/app/node_modules/.strapi/vite && \
     chown -R node:node /opt/app/node_modules/.strapi/vite
 
-# Exponer los puertos necesarios para Strapi y Vite
+# Expose necessary ports
 EXPOSE 1337
 EXPOSE 5173
 
-# Comando para ejecutar la aplicación
+# Start the application
 CMD ["yarn", "develop"]
