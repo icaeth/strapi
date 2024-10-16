@@ -10,8 +10,8 @@ services:
       - seccomp:unconfined
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./app:/opt/app # Montar la aplicación para que los cambios se reflejen
-      - strapi-data:/opt/app/public/uploads # Volumen para los datos persistentes
+      - /root/sites/strapi/app:/opt/app
+      - /root/sites/strapi/data:/opt/app/public/uploads
     environment:
       VIRTUAL_HOST: ${VIRTUAL_HOST}
       VIRTUAL_PORT: 1337
